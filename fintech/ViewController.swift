@@ -6,12 +6,21 @@
 //
 
 import UIKit
+import Foundation
 
 class ViewController: UIViewController {
+    
+    
+    let contentView = UIView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        setup()
+    }
+    
+    private func setup() {
+        view.backgroundColor = .green
     }
 
 
