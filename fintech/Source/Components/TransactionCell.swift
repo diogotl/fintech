@@ -1,4 +1,5 @@
 import UIKit
+import Foundation
 
 class TransactionCell: UITableViewCell {
     
@@ -32,15 +33,17 @@ class TransactionCell: UITableViewCell {
         }
         iconView.tintColor = UIColor.systemPurple
 
-        titleLabel.text = transaction.description
+        titleLabel.text = transaction.title
         titleLabel.font = .boldSystemFont(ofSize: 17)
-
-        dateLabel.text = transaction.date
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy"
+        dateLabel.text = formatter.string(from: transaction.date)
         dateLabel.font = .systemFont(ofSize: 13)
         dateLabel.textColor = .gray
 
-        let isIncome = transaction.price > 0
-        amountLabel.text = String(format: "R$ %.2f", abs(transaction.price))
+        let isIncome = transaction.amount > 0
+        amountLabel.text = String(format: "R$ %.2f", abs(transaction.amount))
         amountLabel.font = .boldSystemFont(ofSize: 17)
         amountLabel.textColor = isIncome ? .systemGreen : .black
 
