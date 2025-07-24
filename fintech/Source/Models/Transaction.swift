@@ -5,10 +5,12 @@
 //  Created by Diogo on 19/07/2025.
 //
 
+import Foundation
+
 public struct Transaction {
-    let description: String
-    let price: Double
+    let title: String
     let category: String
+    let amount: Double
     let type: String
-    let date: String
+    let date: Date
 }
