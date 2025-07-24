@@ -3,6 +3,8 @@ import UIKit
 
 class HomeView: UIView {
 
+    weak var delegate: HomeViewDelegate?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -21,7 +23,11 @@ class HomeView: UIView {
         userData.addSubview(logOuttButton)
         addSubview(contentView)
         contentView.addSubview(summaryCardComponent)
+        contentView.addSubview(transactionsTableViewHeader)
+        transactionsTableViewHeader.addSubview(transactiionsTableViewHeaderLabel)
+        transactionsTableViewHeader.addSubview(transactiionsTableViewHeaderCountLabel)
         contentView.addSubview(transactionsTableView)
+        addSubview(floatingButton)
         setupConstraints()
     }
 
@@ -95,22 +101,70 @@ class HomeView: UIView {
         return component
     }()
 
+    let transactionsTableViewHeader: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 12
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        return view
+    }()
+
+    let transactiionsTableViewHeaderLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Transactions"
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.textColor = .black
+
+        return label
+    }()
+
+    let transactiionsTableViewHeaderCountLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "123"
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.textColor = .black
+        return label
+    }()
+
     let transactionsTableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .clear
+        tableView.backgroundColor = .white
+        tableView.layer.cornerRadius = 12
+        tableView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         tableView.register(TransactionCell.self, forCellReuseIdentifier: "TransactionCell")
         return tableView
     }()
+
+    let floatingButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .black
+        button.tintColor = .white
+        button.setTitle("+", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        button.layer.cornerRadius = 32
+        button.clipsToBounds = true
+        button.addTarget(self, action: #selector(didTapFloatingButton), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc
+    private func didTapFloatingButton() {
+        delegate?.didTapPlusButton()
+    }
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             userData.leadingAnchor.constraint(equalTo: leadingAnchor),
             userData.trailingAnchor.constraint(equalTo: trailingAnchor),
             userData.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            userData.heightAnchor.constraint(equalToConstant: 100),
+            userData.heightAnchor.constraint(equalToConstant: 80),
 
-            userAvatar.topAnchor.constraint(equalTo: userData.topAnchor, constant: 20),
+            userAvatar.topAnchor.constraint(equalTo: userData.topAnchor, constant: 16),
             userAvatar.leadingAnchor.constraint(equalTo: userData.leadingAnchor, constant: 16),
             userAvatar.widthAnchor.constraint(equalToConstant: 40),
             userAvatar.heightAnchor.constraint(equalToConstant: 40),
@@ -139,14 +193,41 @@ class HomeView: UIView {
                 equalTo: contentView.trailingAnchor, constant: -16),
             summaryCardComponent.heightAnchor.constraint(equalToConstant: 232),
 
-            transactionsTableView.topAnchor.constraint(
+            transactionsTableViewHeader.topAnchor.constraint(
                 equalTo: summaryCardComponent.bottomAnchor, constant: 16),
+            transactionsTableViewHeader.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor, constant: 16),
+            transactionsTableViewHeader.trailingAnchor.constraint(
+                equalTo: contentView.trailingAnchor, constant: -16),
+            transactionsTableViewHeader.heightAnchor.constraint(equalToConstant: 44),
+
+            transactionsTableViewHeader.leadingAnchor.constraint(
+                equalTo: transactionsTableViewHeader.leadingAnchor, constant: 16),
+            transactionsTableView.centerXAnchor.constraint(
+                equalTo: transactionsTableViewHeader.centerXAnchor),
+            
+            transactiionsTableViewHeaderLabel.leadingAnchor.constraint(
+                equalTo: transactionsTableViewHeader.leadingAnchor, constant: 16),
+            transactiionsTableViewHeaderLabel.centerYAnchor.constraint(
+                equalTo: transactionsTableViewHeader.centerYAnchor),
+            transactiionsTableViewHeaderCountLabel.trailingAnchor.constraint(
+                equalTo: transactionsTableViewHeader.trailingAnchor, constant: -16),
+            transactiionsTableViewHeaderCountLabel.centerYAnchor.constraint(
+                equalTo: transactionsTableViewHeader.centerYAnchor),
+
+            transactionsTableView.topAnchor.constraint(
+                equalTo: transactionsTableViewHeader.bottomAnchor),
             transactionsTableView.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor, constant: 16),
             transactionsTableView.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor, constant: -16),
             transactionsTableView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor, constant: -16),
+
+            floatingButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+                floatingButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -24),
+                floatingButton.widthAnchor.constraint(equalToConstant: 64),
+                floatingButton.heightAnchor.constraint(equalToConstant: 64),
         ])
     }
 }
