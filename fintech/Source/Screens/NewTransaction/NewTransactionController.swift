@@ -15,10 +15,11 @@ class NewTransactionController: UIViewController {
     
     init(
         contentView: NewTransaction,
-        viewModel: NewTransactionViewModel
+        viewModel: NewTransactionViewModel,
     ) {
         self.contentView = contentView
         self.viewModel = viewModel
+     
         super.init(nibName: nil, bundle: nil)
     }
     
