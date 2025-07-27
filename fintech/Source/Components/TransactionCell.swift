@@ -1,10 +1,10 @@
-import UIKit
 import Foundation
+import UIKit
 
 class TransactionCell: UITableViewCell {
-    
+
     static let identifier = "TransactionCell"
-    
+
     private let iconView = UIImageView()
     private let titleLabel = UILabel()
     private let dateLabel = UILabel()
@@ -35,7 +35,7 @@ class TransactionCell: UITableViewCell {
 
         titleLabel.text = transaction.title
         titleLabel.font = .boldSystemFont(ofSize: 17)
-        
+
         let formatter = DateFormatter()
         formatter.dateFormat = "dd/MM/yyyy"
         dateLabel.text = formatter.string(from: transaction.date)
@@ -80,6 +80,7 @@ class TransactionCell: UITableViewCell {
 
             dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
+            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
             amountLabel.trailingAnchor.constraint(
                 equalTo: arrowImageView.leadingAnchor, constant: -8),

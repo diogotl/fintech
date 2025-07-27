@@ -8,6 +8,7 @@ class HomeView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
+        summaryCardComponent.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -123,7 +124,7 @@ class HomeView: UIView {
     let transactiionsTableViewHeaderCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "123"
+        //label.text = "123"
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .black
         return label
@@ -151,7 +152,7 @@ class HomeView: UIView {
         button.addTarget(self, action: #selector(didTapFloatingButton), for: .touchUpInside)
         return button
     }()
-    
+
     @objc
     private func didTapFloatingButton() {
         delegate?.didTapPlusButton()
@@ -162,9 +163,9 @@ class HomeView: UIView {
             userData.leadingAnchor.constraint(equalTo: leadingAnchor),
             userData.trailingAnchor.constraint(equalTo: trailingAnchor),
             userData.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            userData.heightAnchor.constraint(equalToConstant: 80),
+            userData.heightAnchor.constraint(equalToConstant: 60),
 
-            userAvatar.topAnchor.constraint(equalTo: userData.topAnchor, constant: 16),
+            userAvatar.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             userAvatar.leadingAnchor.constraint(equalTo: userData.leadingAnchor, constant: 16),
             userAvatar.widthAnchor.constraint(equalToConstant: 40),
             userAvatar.heightAnchor.constraint(equalToConstant: 40),
@@ -205,7 +206,7 @@ class HomeView: UIView {
                 equalTo: transactionsTableViewHeader.leadingAnchor, constant: 16),
             transactionsTableView.centerXAnchor.constraint(
                 equalTo: transactionsTableViewHeader.centerXAnchor),
-            
+
             transactiionsTableViewHeaderLabel.leadingAnchor.constraint(
                 equalTo: transactionsTableViewHeader.leadingAnchor, constant: 16),
             transactiionsTableViewHeaderLabel.centerYAnchor.constraint(
@@ -225,9 +226,16 @@ class HomeView: UIView {
                 equalTo: contentView.bottomAnchor, constant: -16),
 
             floatingButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-                floatingButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -24),
-                floatingButton.widthAnchor.constraint(equalToConstant: 64),
-                floatingButton.heightAnchor.constraint(equalToConstant: 64),
+            floatingButton.bottomAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -24),
+            floatingButton.widthAnchor.constraint(equalToConstant: 64),
+            floatingButton.heightAnchor.constraint(equalToConstant: 64),
         ])
+    }
+}
+
+extension HomeView: SummaryCardComponentDelegate {
+    func didTapSummaryCardSettingsButton() {
+        delegate?.didTapSettingsButton()
     }
 }

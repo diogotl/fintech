@@ -21,10 +21,11 @@ class HomeViewController: UIViewController {
 
         viewModel.store.onTransactionsChanged = { [weak self] in
             DispatchQueue.main.async {
+                self?.contentView.transactiionsTableViewHeaderCountLabel.text =
+                    "\(self?.viewModel.transactionsCount())"
                 self?.contentView.transactionsTableView.reloadData()
             }
         }
-
         print(viewModel.balanceForSelectedMonth)
     }
 
@@ -60,12 +61,17 @@ extension HomeViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        return UITableView.automaticDimension
     }
 }
 
 extension HomeViewController: HomeViewDelegate {
+    func didTapSettingsButton() {
+        flowDelegate?.goToCreateMonthlyBudget()
+    }
+
     func didTapPlusButton() {
         flowDelegate?.openNewTransactionBottomSheet()
     }
 }
+

@@ -10,7 +10,11 @@ class HomeViewModel {
     var transactions: [Transaction] {
         return store.transactions
     }
-
+    
+    func transactionsCount() -> Int {
+        return store.transactions.count
+    }
+        
     func addTransaction(_ transaction: Transaction) {
         store.add(transaction)
     }
