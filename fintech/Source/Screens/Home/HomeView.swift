@@ -22,15 +22,23 @@ class HomeView: UIView {
         userData.addSubview(userName)
         userData.addSubview(userAppDescription)
         userData.addSubview(logOuttButton)
+        addSubview(monthSelectorView)
         addSubview(contentView)
         contentView.addSubview(summaryCardComponent)
         contentView.addSubview(transactionsTableViewHeader)
         transactionsTableViewHeader.addSubview(transactiionsTableViewHeaderLabel)
         transactionsTableViewHeader.addSubview(transactiionsTableViewHeaderCountLabel)
         contentView.addSubview(transactionsTableView)
+        transactionsTableView.addSubview(emptyStateLabel)
         addSubview(floatingButton)
         setupConstraints()
     }
+
+    let monthSelectorView: MonthSelectorView = {
+        let view = MonthSelectorView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
 
     private let userData: UIView = {
         let view = UIView()
@@ -70,17 +78,24 @@ class HomeView: UIView {
     private let logOuttButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("X", for: .normal)
-        button.setTitleColor(.black, for: .normal)
+        let icon = UIImage(systemName: "arrow.backward.square")
+        button.setImage(icon, for: .normal)
+        button.tintColor = .black
         button.backgroundColor = .clear
         button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(signOut), for: .touchUpInside)
         return button
     }()
+    
+    @objc
+    private func signOut() {
+        delegate?.didTapSignOutButton()
+    }
 
     private let contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = Colors.gray200
         return view
     }()
 
@@ -92,12 +107,15 @@ class HomeView: UIView {
         return view
     }()
 
-    private let summaryCardComponent: SummaryCardComponent = {
-        let component = SummaryCardComponent(
-            balance: "$1,000.00",
-            change: "+$100.00",
-            period: "Last 30 days",
-        )
+    let summaryCardComponent: SummaryCardComponent = {
+        let component = SummaryCardComponent()
+        component.configure(
+            budget: 0,
+            usedExpenses: 0,
+            limit: 0,
+            month: Date(),
+            usedPercentage: 0,
+            transactions: [])
         component.translatesAutoresizingMaskIntoConstraints = false
         return component
     }()
@@ -129,6 +147,16 @@ class HomeView: UIView {
         label.textColor = .black
         return label
     }()
+    
+    let emptyStateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No transactions yet."
+        label.textAlignment = .center
+        label.textColor = .gray
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
 
     let transactionsTableView: UITableView = {
         let tableView = UITableView()
@@ -145,7 +173,8 @@ class HomeView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .black
         button.tintColor = .white
-        button.setTitle("+", for: .normal)
+        let icon = UIImage(systemName: "plus")
+        button.setImage(icon, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         button.layer.cornerRadius = 32
         button.clipsToBounds = true
@@ -178,16 +207,21 @@ class HomeView: UIView {
 
             logOuttButton.topAnchor.constraint(equalTo: userAvatar.topAnchor),
             logOuttButton.trailingAnchor.constraint(
-                equalTo: userData.trailingAnchor, constant: -16),
-            logOuttButton.heightAnchor.constraint(equalToConstant: 44),
-            logOuttButton.widthAnchor.constraint(equalToConstant: 44),
+                equalTo: userData.trailingAnchor, constant: -8),
+            logOuttButton.heightAnchor.constraint(equalToConstant: 32),
+            logOuttButton.widthAnchor.constraint(equalToConstant: 32),
+            
+            monthSelectorView.topAnchor.constraint(equalTo: userData.bottomAnchor, constant: 8),
+            monthSelectorView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            monthSelectorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            monthSelectorView.heightAnchor.constraint(equalToConstant: 44),
 
             contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            contentView.topAnchor.constraint(equalTo: userData.bottomAnchor),
+            contentView.topAnchor.constraint(equalTo: monthSelectorView.bottomAnchor),
             contentView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
 
-            summaryCardComponent.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 60),
+            summaryCardComponent.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             summaryCardComponent.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor, constant: 16),
             summaryCardComponent.trailingAnchor.constraint(
@@ -224,10 +258,13 @@ class HomeView: UIView {
                 equalTo: contentView.trailingAnchor, constant: -16),
             transactionsTableView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor, constant: -16),
+            
+            emptyStateLabel.centerXAnchor.constraint(equalTo: transactionsTableView.centerXAnchor),
+            emptyStateLabel.centerYAnchor.constraint(equalTo: transactionsTableView.centerYAnchor),
 
             floatingButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             floatingButton.bottomAnchor.constraint(
-                equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -24),
+                equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -8),
             floatingButton.widthAnchor.constraint(equalToConstant: 64),
             floatingButton.heightAnchor.constraint(equalToConstant: 64),
         ])
