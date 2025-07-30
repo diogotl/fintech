@@ -5,27 +5,7 @@ class SummaryCardComponent: UIView {
 
     weak var delegate: SummaryCardComponentDelegate?
 
-    private let balance: String
-    private let change: String?
-    private let period: String?
-
-    private func setupGradientBackground() {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor(red: 0.06, green: 0.06, blue: 0.06, alpha: 1).cgColor,  // #0F0F0F
-            UIColor(red: 0.18, green: 0.18, blue: 0.18, alpha: 1).cgColor,  // #2D2D2D
-        ]
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
-        gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
-        gradientLayer.frame = bounds
-        gradientLayer.cornerRadius = 12
-        layer.insertSublayer(gradientLayer, at: 0)
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        layer.sublayers?.first(where: { $0 is CAGradientLayer })?.frame = bounds
-    }
+    // MARK: - UI Elements
 
     private let changeLabel: UILabel = {
         let label = UILabel()
@@ -75,7 +55,7 @@ class SummaryCardComponent: UIView {
 
     @objc
     private func handleBudgetButtonTap() {
-        print("iusdijsidsji")
+        delegate?.didTapSummaryCardSettingsButton()
     }
 
     private let monthLabel: UILabel = {
@@ -84,7 +64,7 @@ class SummaryCardComponent: UIView {
         label.font = Typography.titleSM
         label.textColor = Colors.gray100
         label.textAlignment = .center
-        label.text = "MAIO"
+        label.text = ""
         return label
     }()
 
@@ -104,7 +84,6 @@ class SummaryCardComponent: UIView {
         label.textColor = Colors.gray400
         label.text = "Orçamento disponível"
         label.textAlignment = .center
-
         return label
     }()
 
@@ -124,7 +103,7 @@ class SummaryCardComponent: UIView {
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .lightGray
         label.textAlignment = .center
-        label.text = "Budget Limit"
+        label.text = "Despesas usadas"
         return label
     }()
 
@@ -144,7 +123,7 @@ class SummaryCardComponent: UIView {
         label.font = UIFont.systemFont(ofSize: 12)
         label.textColor = .lightGray
         label.textAlignment = .center
-        label.text = "Budget Limit"
+        label.text = "Limite do orçamento"
         return label
     }()
 
@@ -171,11 +150,9 @@ class SummaryCardComponent: UIView {
         return progressView
     }()
 
-    init(balance: String, change: String? = nil, period: String? = nil) {
-        self.balance = balance
-        self.change = change
-        self.period = period
+    // MARK: - Init
 
+    init() {
         super.init(frame: .zero)
         setupGradientBackground()
         setupUI()
@@ -185,26 +162,29 @@ class SummaryCardComponent: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupUI() {
-        //linear-gradient(102deg, #0F0F0F 0%, #2D2D2D 100%)
+    // MARK: - Setup
 
+    private func setupGradientBackground() {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor(red: 0.06, green: 0.06, blue: 0.06, alpha: 1).cgColor,  // #0F0F0F
+            UIColor(red: 0.18, green: 0.18, blue: 0.18, alpha: 1).cgColor,  // #2D2D2D
+        ]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
+        gradientLayer.frame = bounds
+        gradientLayer.cornerRadius = 12
+        layer.insertSublayer(gradientLayer, at: 0)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.sublayers?.first(where: { $0 is CAGradientLayer })?.frame = bounds
+    }
+
+    private func setupUI() {
         layer.cornerRadius = 12
         translatesAutoresizingMaskIntoConstraints = false
-
-        progressView.progress = 0.69
-
-        if let change = change {
-            changeLabel.text = change
-            changeLabel.textColor = change.hasPrefix("+") ? .systemGreen : .systemRed
-        } else {
-            changeLabel.isHidden = true
-        }
-
-        if let period = period {
-            periodLabel.text = period
-        } else {
-            periodLabel.isHidden = true
-        }
 
         addSubview(monthLabel)
         addSubview(settingsButton)
@@ -228,8 +208,8 @@ class SummaryCardComponent: UIView {
             monthLabel.topAnchor.constraint(equalTo: topAnchor, constant: 24),
             monthLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
 
-            settingsButton.topAnchor.constraint(equalTo: topAnchor, constant: 24),
-            settingsButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
+            settingsButton.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            settingsButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
 
             divider.topAnchor.constraint(equalTo: settingsButton.bottomAnchor, constant: 8),
             divider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
@@ -241,11 +221,13 @@ class SummaryCardComponent: UIView {
             balanceValue.topAnchor.constraint(equalTo: balanceLabel.bottomAnchor, constant: 8),
             balanceValue.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
 
-            budgetButton.topAnchor.constraint(equalTo: balanceValue.bottomAnchor, constant: 8),
-            budgetButton.heightAnchor.constraint(equalToConstant: 48),
+            budgetButton.topAnchor.constraint(equalTo: balanceLabel.bottomAnchor, constant: 8),
             budgetButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
             budgetButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
+            budgetButton.heightAnchor.constraint(equalToConstant: 48),
 
+            usedExpensesLabel.topAnchor.constraint(
+                equalTo: budgetButton.bottomAnchor, constant: 8),
             usedExpensesLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             usedExpensesLabel.bottomAnchor.constraint(
                 equalTo: usedExpensesValue.topAnchor, constant: -16),
@@ -265,6 +247,31 @@ class SummaryCardComponent: UIView {
             progressView.bottomAnchor.constraint(equalTo: bottomAnchor),
             progressView.heightAnchor.constraint(equalToConstant: 8),
         ])
+    }
+    
+    // MARK: - Atualização Dinâmica
+
+    func configure(
+        budget: Double, usedExpenses: Double, limit: Double, month: Date, usedPercentage: Double,
+        transactions: [Transaction]
+    ) {
+        if limit == 0.0 {
+            budgetLimitValue.text = "∞"
+            budgetButton.isHidden = false
+            balanceValue.isHidden = true
+            return
+        }
+
+        budgetLimitValue.text = "$ \(limit)"
+        usedExpensesValue.text = "$ \(usedExpenses)"
+        balanceValue.text = "$ \(budget)"
+        budgetButton.isHidden = true
+        balanceValue.isHidden = false
+
+        let monthFormatter = DateFormatter()
+        monthFormatter.dateFormat = "MMMM"
+        monthLabel.text = monthFormatter.string(from: month).uppercased()
+        progressView.progress = Float(usedPercentage / 100)
     }
 
     func updateBalance(_ newBalance: String, change: String? = nil) {
