@@ -6,5 +6,8 @@
 //
 
 protocol CreateMonthlyBudgetDelegate: AnyObject {
-    func didTapSettingButton()
+    func didTapAddBudget(
+        monthYear: String,
+        budget: String
+    )
 }

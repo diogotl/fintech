@@ -23,33 +23,43 @@ class Coordinator: CreateMonthlyBudgetFlowDelegate {
 extension Coordinator: SignUpViewFlowDelegate {
     func goToHomeView() {
         let contentView = HomeView()
-        //let transactionStore = TransactionsStore()
-        let viewModel = HomeViewModel(
-            store: transactionStore
-        )
+        let viewModel = HomeViewModel(store: transactionStore)
         let startViewController = HomeViewController(
             contentView: contentView,
             viewModel: viewModel,
             flowDelegate: self
         )
+        
+        // Hide the back button for this view controller
+        startViewController.navigationItem.hidesBackButton = true
 
-        navigationController?.navigationBar.backItem?.hidesBackButton = true
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         navigationController?.pushViewController(
             startViewController,
-            animated: true,
+            animated: true
         )
-        
+        // Optionally disable the swipe-to-go-back gesture
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
     }
 }
 
 extension Coordinator: HomeViewFlowDelegate {
+    func returnToSignUp() {
+        navigationController?.popToRootViewController(animated: true)
+    }
+    
     func goToCreateMonthlyBudget() {
+        let store = TransactionsStore()
+        let createMonthlyBudgetViewModel = CreateMonthlyBudgetViewModel(
+            store: store,
+        )
         let createMonthlyBudgetView = CreateMonthlyBudgetView()
         let createMonthlyBudgetController = CreateMonthlyBudgetController(
             contentView: createMonthlyBudgetView,
+            viewModel: createMonthlyBudgetViewModel,
             flowDelegate: self
         )
+        
+        createMonthlyBudgetController.navigationItem.hidesBackButton = true
 
         navigationController?.pushViewController(
             createMonthlyBudgetController,

@@ -5,13 +5,6 @@ class TransactionCell: UITableViewCell {
 
     static let identifier = "TransactionCell"
 
-    private let iconView = UIImageView()
-    private let titleLabel = UILabel()
-    private let dateLabel = UILabel()
-    private let amountLabel = UILabel()
-    private let arrowImageView = UIImageView()
-    private let trashButton = UIButton(type: .system)
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
@@ -20,49 +13,76 @@ class TransactionCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func configure(with transaction: Transaction) {
-        // Ícone por categoria (exemplo simples)
-        switch transaction.category {
-        case "Shopping": iconView.image = UIImage(systemName: "cart")
-        case "Gift": iconView.image = UIImage(systemName: "gift")
-        case "Utilities": iconView.image = UIImage(systemName: "doc.text")
-        case "Rent": iconView.image = UIImage(systemName: "house")
-        case "Salary": iconView.image = UIImage(systemName: "briefcase")
-        default: iconView.image = UIImage(systemName: "questionmark")
-        }
-        iconView.tintColor = UIColor.systemPurple
-
-        titleLabel.text = transaction.title
-        titleLabel.font = .boldSystemFont(ofSize: 17)
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yyyy"
-        dateLabel.text = formatter.string(from: transaction.date)
-        dateLabel.font = .systemFont(ofSize: 13)
-        dateLabel.textColor = .gray
-
-        let isIncome = transaction.amount > 0
-        amountLabel.text = String(format: "R$ %.2f", abs(transaction.amount))
-        amountLabel.font = .boldSystemFont(ofSize: 17)
-        amountLabel.textColor = isIncome ? .systemGreen : .black
-
-        arrowImageView.image = UIImage(systemName: isIncome ? "arrow.up" : "arrow.down")
-        arrowImageView.tintColor = isIncome ? .systemGreen : .systemRed
-
-        trashButton.setImage(UIImage(systemName: "trash"), for: .normal)
-        trashButton.tintColor = UIColor.systemPurple
-    }
-
-    private func setupUI() {
+    
+    private let iconBackgroundView: UIView = {
+        let iconBackgroundView = UIView()
+        iconBackgroundView.backgroundColor = Colors.gray200
+        iconBackgroundView.layer.cornerRadius = 6
+        iconBackgroundView.layer.masksToBounds = true
+        iconBackgroundView.layer.borderWidth = 1
+        iconBackgroundView.layer.borderColor = Colors.gray300.cgColor
+        iconBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        iconBackgroundView.contentMode = .scaleAspectFit
+        return iconBackgroundView
+    }()
+    
+    private let iconView: UIImageView = {
+        let iconView = UIImageView()
         iconView.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        amountLabel.translatesAutoresizingMaskIntoConstraints = false
-        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
-        trashButton.translatesAutoresizingMaskIntoConstraints = false
-
-        contentView.addSubview(iconView)
+        iconView.contentMode = .scaleAspectFit
+        iconView.tintColor = Colors.magenta
+        return iconView
+    }()
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = Typography.textSMBold
+        label.textColor = Colors.gray700
+        return label
+    }()
+    
+    private let dateLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = Typography.textXS
+        label.textColor = Colors.gray500
+        return label
+    }()
+    
+    private let amountLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = Typography.titleMD
+        label.textColor = Colors.gray700
+        return label
+    }()
+    
+    private let arrowImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = Colors.gray500
+        return imageView
+    }()
+    
+    private let trashButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = Colors.gray500
+        button.setImage(UIImage(systemName: "trash"), for: .normal)
+        button.addTarget(self, action: #selector(trashButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc
+    private func trashButtonTapped() {
+        // Handle trash button tap
+    }
+    
+    private func setupUI() {
+        contentView.addSubview(iconBackgroundView)
+        iconBackgroundView.addSubview(iconView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(dateLabel)
         contentView.addSubview(amountLabel)
@@ -70,17 +90,20 @@ class TransactionCell: UITableViewCell {
         contentView.addSubview(trashButton)
 
         NSLayoutConstraint.activate([
-            iconView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            iconView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 36),
-            iconView.heightAnchor.constraint(equalToConstant: 36),
+            iconBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            iconBackgroundView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            iconBackgroundView.widthAnchor.constraint(equalToConstant: 36),
+            iconBackgroundView.heightAnchor.constraint(equalToConstant: 36),
+            
+            iconView.centerXAnchor.constraint(equalTo: iconBackgroundView.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: iconBackgroundView.centerYAnchor),
 
-            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12),
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            titleLabel.leadingAnchor.constraint(equalTo: iconBackgroundView.trailingAnchor, constant: 12),
+            titleLabel.topAnchor.constraint(equalTo: iconBackgroundView.topAnchor),
 
             dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 2),
-            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            dateLabel.bottomAnchor.constraint(equalTo: iconBackgroundView.bottomAnchor),
 
             amountLabel.trailingAnchor.constraint(
                 equalTo: arrowImageView.leadingAnchor, constant: -8),
@@ -95,8 +118,32 @@ class TransactionCell: UITableViewCell {
             trashButton.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor, constant: -16),
             trashButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            trashButton.widthAnchor.constraint(equalToConstant: 24),
-            trashButton.heightAnchor.constraint(equalToConstant: 24),
+            trashButton.widthAnchor.constraint(equalToConstant: 16),
+            trashButton.heightAnchor.constraint(equalToConstant: 16),
         ])
+    }
+    
+    func configure(with transaction: Transaction) {
+        switch transaction.category {
+        case "Shopping": iconView.image = UIImage(systemName: "cart")
+        case "Gift": iconView.image = UIImage(systemName: "gift")
+        case "Utilities": iconView.image = UIImage(systemName: "doc.text")
+        case "Rent": iconView.image = UIImage(systemName: "house")
+        case "Salary": iconView.image = UIImage(systemName: "briefcase")
+        default: iconView.image = UIImage(systemName: "questionmark")
+        }
+        
+        titleLabel.text = transaction.title
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/YY"
+        dateLabel.text = formatter.string(from: transaction.date)
+
+        let isIncome = transaction.type == "Income"
+        amountLabel.text = String(format: "€ %.2f", abs(transaction.amount))
+
+        arrowImageView.image = UIImage(systemName: isIncome ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
+        arrowImageView.tintColor = isIncome ? Colors.green : Colors.red
+        
     }
 }
