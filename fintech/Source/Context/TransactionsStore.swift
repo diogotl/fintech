@@ -1,5 +1,12 @@
 import Foundation
-import UIKit
+
+struct MonthlySummary {
+    let transactions: [Transaction]
+    let balance: Double
+    let usedAmount: Double
+    let usedPercentage: Double
+    let limit: Double
+}
 
 class TransactionsStore {
     private(set) var transactions: [Transaction] = [
@@ -15,50 +22,69 @@ class TransactionsStore {
             category: "Income",
             amount: 3000.00,
             type: "Income",
-            date: ISO8601DateFormatter().date(from: "2025-06-05T00:00:00Z")!
-        ),
-        Transaction(
-            title: "Restaurante",
-            category: "Food",
-            amount: 80.00,
-            type: "Expense",
-            date: ISO8601DateFormatter().date(from: "2024-06-03T00:00:00Z")!
-        ),
-        Transaction(
-            title: "Transporte",
-            category: "Transport",
-            amount: 50.00,
-            type: "Expense",
-            date: ISO8601DateFormatter().date(from: "2024-06-01T00:00:00Z")!
-        ),
+            date: ISO8601DateFormatter().date(from: "2025-07-05T00:00:00Z")!
+        )
     ]
 
-    private var budgetPerMonth: [Budget] = [
-        Budget(id: UUID(), month: ISO8601DateFormatter().date(from: "2024-06-01T00:00:00Z")!, limit: 5000.00),
-        Budget(id: UUID(), month: ISO8601DateFormatter().date(from: "2024-07-01T00:00:00Z")!, limit: 5500.00),
-        Budget(id: UUID(), month: ISO8601DateFormatter().date(from: "2025-08-01T00:00:00Z")!, limit: 6000.00),
+    private(set) var budgetPerMonth: [Budget] = [
+        Budget(
+            id: UUID(), month: ISO8601DateFormatter().date(from: "2025-07-01T00:00:00Z")!,
+            limit: 5000.00)
     ]
 
-    var onTransactionsChanged: (() -> Void)?
-    
-    var selectedMonth: Date = Date() 
+    var selectedMonth: Date = Date()
 
-    func add(_ transaction: Transaction) {
+    var onDataChanged: (() -> Void)?
+
+    func addTransaction(_ transaction: Transaction) {
         transactions.append(transaction)
-        onTransactionsChanged?()
+        onDataChanged?()
     }
 
-    var transactionsForSelectedMonth: [Transaction] {
+    func deleteTransaction(at index: Int) {
+        guard index < transactions.count else { return }
+        transactions.remove(at: index)
+        onDataChanged?()
+    }
+
+    func getMonthlySummary() -> MonthlySummary? {
         let calendar = Calendar.current
-        return transactions.filter { transaction in
-            calendar.isDate(transaction.date, equalTo: selectedMonth, toGranularity: .month)
+        let selectedMonthValue = calendar.component(.month, from: selectedMonth)
+
+        let transactionsOfMonth = transactions.filter {
+            calendar.component(.month, from: $0.date) == selectedMonthValue
         }
+
+        guard let budget = budgetPerMonth.first(where: {
+            calendar.component(.month, from: $0.month) == selectedMonthValue
+        }) else { return nil }
+
+        let usedAmount = transactionsOfMonth
+            .filter { $0.type.lowercased() == "expense" }
+            .reduce(0) { $0 + $1.amount }
+
+        let totalIncome = transactionsOfMonth
+            .filter { $0.type.lowercased() == "income" }
+            .reduce(0) { $0 + $1.amount }
+
+        let balance = totalIncome - usedAmount
+        let usedPercentage = budget.limit == 0 ? 0 : (usedAmount / budget.limit) * 100
+
+        return MonthlySummary(
+            transactions: transactionsOfMonth,
+            balance: balance,
+            usedAmount: usedAmount,
+            usedPercentage: usedPercentage,
+            limit: budget.limit
+        )
+    }
+    
+    func getAllBudgets() -> [Budget] {
+        return budgetPerMonth
     }
 
-    var balanceForSelectedMonth: Double {
-        transactionsForSelectedMonth.reduce(0) { $0 + $1.amount }
-        
-        return transactionsForSelectedMonth.reduce(0) { $0 + $1.amount }
+    func changeMonth(to date: Date) {
+        selectedMonth = date
+        onDataChanged?()
     }
-
 }
