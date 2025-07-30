@@ -33,7 +33,14 @@ class NewTransactionController: UIViewController {
         contentView.delegate = self
         setupContentView()
         configureSheet()
+                
+        let blurEffect = UIBlurEffect(style: .systemMaterial)
+        let blurView = UIVisualEffectView(effect: blurEffect)
+        blurView.frame = view.bounds
+        blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(blurView, at: 0)
     }
+
 
     private func setupContentView() {
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -49,7 +56,7 @@ class NewTransactionController: UIViewController {
 
     private func configureSheet() {
         if let sheet = self.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
+            sheet.detents = [.medium()]
             sheet.prefersGrabberVisible = true
             sheet.preferredCornerRadius = 24
         }

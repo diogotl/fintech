@@ -16,6 +16,6 @@ class NewTransactionViewModel {
     }
     
     func add(transaction: Transaction) {
-        store.add(transaction)
+        store.addTransaction(transaction)
     }
 }
