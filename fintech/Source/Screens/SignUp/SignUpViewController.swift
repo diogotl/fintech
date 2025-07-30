@@ -45,13 +45,17 @@ class SignUpViewController: UIViewController {
 
 extension SignUpViewController: SignUpViewDelegate {
     func didTapSignUpButton(username: String, password: String, email: String) {
-        print("Sign Up Button Tapped")
-        print("Username: \(username)")
-        print("Password: \(password)")
-        print("Email: \(email)")
 
-        flowDelegate?.goToHomeView()
-
-        print("uHUHUhuh")
+        self.flowDelegate?.goToHomeView()
+        
+        viewModel.register(email: email, username: username, password: password) {
+            [weak self] result in
+            switch result {
+            case .success:
+                self?.flowDelegate?.goToHomeView()
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
