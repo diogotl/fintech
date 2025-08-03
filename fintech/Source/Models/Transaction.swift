@@ -7,10 +7,13 @@
 
 import Foundation
 
-public struct Transaction {
+public struct Transaction : Identifiable {
+    public let id: UUID
+    
     let title: String
-    let category: String
-    let amount: Double
+    let value: Int32
     let type: String
     let date: Date
+    
+    let categoryId: UUID
 }

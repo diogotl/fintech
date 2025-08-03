@@ -10,4 +10,6 @@ protocol CreateMonthlyBudgetDelegate: AnyObject {
         monthYear: String,
         budget: String
     )
+    
+    func didTapReturn()
 }

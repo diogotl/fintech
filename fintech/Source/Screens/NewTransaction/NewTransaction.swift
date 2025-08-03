@@ -115,14 +115,13 @@ class NewTransaction: UIView {
 
     @objc
     private func addTransactionButtonTapped() {
-        let transaction = Transaction(
+        delegate?.didTapSaveTransaction(
             title: transactionTitle.text ?? "",
-            category: transactionCategory.text ?? "",
-            amount: Double(transactionAmount.text ?? "") ?? 0.0,
-            type: selectedType,
-            date: transactionDate.date
+            categoryId: UUID(),
+            value: Double(transactionAmount.text ?? "") ?? 0,
+            date: transactionDate.date,
+            type: selectedType
         )
-        delegate?.didTapSaveTransaction(transaction: transaction)
     }
 
     @objc

@@ -8,8 +8,8 @@
 import UIKit
 import Foundation
 
-struct Budget {
-    let id: UUID
-    let month: Date
-    let limit: Double
+struct Budget : Identifiable {
+    public let id: UUID
+    let date: Date
+    let limit: Int32
 }

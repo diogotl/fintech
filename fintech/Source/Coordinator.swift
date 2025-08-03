@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class Coordinator: CreateMonthlyBudgetFlowDelegate {
+class Coordinator {
 
     private var navigationController: UINavigationController?
     let transactionStore = TransactionsStore()
@@ -84,3 +84,10 @@ extension Coordinator: HomeViewFlowDelegate {
 
     }
 }
+
+extension Coordinator: CreateMonthlyBudgetFlowDelegate {
+    func didTapBackButton() {
+        navigationController?.popViewController(animated: true)
+    }
+}
+ 

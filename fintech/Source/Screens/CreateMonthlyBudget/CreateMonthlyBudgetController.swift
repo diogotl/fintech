@@ -24,6 +24,11 @@ class CreateMonthlyBudgetController: UIViewController {
         self.flowDelegate = flowDelegate
         super.init(nibName: nil, bundle: nil)
         setup()
+        viewModel.store.onDataChanged = { [weak self] in
+            DispatchQueue.main.async {
+                self?.contentView.budgetsTableView.reloadData()
+            }
+        }
 
     }
 
@@ -58,8 +63,15 @@ class CreateMonthlyBudgetController: UIViewController {
 }
 
 extension CreateMonthlyBudgetController: CreateMonthlyBudgetDelegate {
+    func didTapReturn() {
+        flowDelegate?.didTapBackButton()
+    }
+    
     func didTapAddBudget(monthYear: String, budget: String) {
-        print("Adding budget for \(monthYear) with value \(budget)")
+        viewModel.addBudget(
+            monthYear: monthYear,
+            budget: Int32(budget) ?? 0
+        )
     }
 }
 
@@ -73,7 +85,7 @@ extension CreateMonthlyBudgetController: UITableViewDelegate, UITableViewDataSou
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BudgetCell", for: indexPath)
         let budget = viewModel.store.getAllBudgets()[indexPath.row]
-        cell.textLabel?.text = "\(budget.month): \(budget.limit)"
+        cell.textLabel?.text = "\(budget.date): \(budget.limit)"
         return cell
     }
 }
@@ -112,11 +124,13 @@ extension CreateMonthlyBudgetController: UIPickerViewDelegate, UIPickerViewDataS
         } else {
             contentView.selectedYear = viewModel.years[row]
         }
-       
-      // quero atualizar o campo de texto com o mês e ano selecionados e fechar o picker
-        
+
+        // quero atualizar o campo de texto com o mês e ano selecionados e fechar o picker
+
         if contentView.selectedMonth != nil && contentView.selectedYear != nil {
-            contentView.monthYearTextField.text = "\(contentView.selectedMonth) \(contentView.selectedYear)"
+
+            contentView.monthYearTextField.text =
+                "\(contentView.selectedMonth!) \(contentView.selectedYear!)"
             contentView.monthYearTextField.resignFirstResponder()
         }
 

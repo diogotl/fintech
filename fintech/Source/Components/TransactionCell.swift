@@ -124,13 +124,14 @@ class TransactionCell: UITableViewCell {
     }
     
     func configure(with transaction: Transaction) {
-        switch transaction.category {
-        case "Shopping": iconView.image = UIImage(systemName: "cart")
-        case "Gift": iconView.image = UIImage(systemName: "gift")
-        case "Utilities": iconView.image = UIImage(systemName: "doc.text")
-        case "Rent": iconView.image = UIImage(systemName: "house")
-        case "Salary": iconView.image = UIImage(systemName: "briefcase")
-        default: iconView.image = UIImage(systemName: "questionmark")
+        let categoryId = transaction.categoryId.uuidString
+            switch categoryId {
+            case "f589b847-035c-4bcc-8803-b95fb49ae1af": iconView.image = UIImage(systemName: "cart")
+            case "f3bbbca0-495c-48f9-b7ff-9f4c9841cac6": iconView.image = UIImage(systemName: "gift")
+            case "b0a5b5f2-ac0c-4e40-b24e-d17410a5e927": iconView.image = UIImage(systemName: "doc.text")
+            case "7a7677f1-2a8c-4bd8-9e92-a1cf720f2aab": iconView.image = UIImage(systemName: "house")
+            case "e7374de4-2f7a-4207-aa79-712191dc027d": iconView.image = UIImage(systemName: "briefcase")
+            default: iconView.image = UIImage(systemName: "questionmark")
         }
         
         titleLabel.text = transaction.title
@@ -140,7 +141,7 @@ class TransactionCell: UITableViewCell {
         dateLabel.text = formatter.string(from: transaction.date)
 
         let isIncome = transaction.type == "Income"
-        amountLabel.text = String(format: "€ %.2f", abs(transaction.amount))
+        amountLabel.text = String(format: "€ %.2f", abs(transaction.value))
 
         arrowImageView.image = UIImage(systemName: isIncome ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
         arrowImageView.tintColor = isIncome ? Colors.green : Colors.red

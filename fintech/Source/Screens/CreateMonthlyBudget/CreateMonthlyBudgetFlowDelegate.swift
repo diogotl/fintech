@@ -7,4 +7,5 @@
 
 protocol CreateMonthlyBudgetFlowDelegate: AnyObject {
     func goToCreateMonthlyBudget()
+    func didTapBackButton()
 }

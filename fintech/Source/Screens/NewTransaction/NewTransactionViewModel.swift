@@ -15,7 +15,25 @@ class NewTransactionViewModel {
         self.store = store
     }
     
-    func add(transaction: Transaction) {
-        store.addTransaction(transaction)
+    func add(
+        title: String,
+        categoryId : UUID,
+        value: Double,
+        date: Date,
+        type: String
+    ) {
+        
+        let transaction = Transaction(
+            id: UUID(),
+            title: title,
+            value: Int32(value * 100),
+            type: type,
+            date: date,
+            categoryId: categoryId,
+        )
+        
+        self.store.addTransaction(
+            transaction
+        )
     }
 }

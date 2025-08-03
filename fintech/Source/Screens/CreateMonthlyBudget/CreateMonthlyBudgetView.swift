@@ -2,38 +2,72 @@ import Foundation
 import UIKit
 
 class CreateMonthlyBudgetView: UIView {
-
+    
     weak var delegate: MonthSelectorViewDelegate?
     weak var viewDelegate: CreateMonthlyBudgetDelegate?
-
+    
     var selectedMonth: String?
     var selectedYear: Int?
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setupView() {
         addSubview(headerView)
+        headerView.addSubview(backButton)
+        headerView.addSubview(titleLabel)
         addSubview(monthYearTextField)
         addSubview(numericValueTextField)
         addSubview(addButton)
         addSubview(budgetsTableView)
         setupConstrains()
     }
-
+    
     private let headerView: UIView = {
-
+        
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .blue
         return view
     }()
+    
+    private let backButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("<", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Orçamentos Mensal"
+        label.textColor = .white
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        return label
+    }()
+    
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Adicione um orçamento mensal"
+        label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 16)
+        return label
+    }()
+    
+    @objc
+    private func backButtonTapped(){
+        viewDelegate?.didTapReturn()
+    }
+        
 
     let monthYearTextField: UITextField = {
         let textField = UITextField()
@@ -62,7 +96,7 @@ class CreateMonthlyBudgetView: UIView {
         textField.layer.borderWidth = 1
         textField.layer.borderColor = Colors.gray300.cgColor
         textField.borderStyle = .roundedRect
-        textField.keyboardType = .decimalPad  // ou .numberPad se quiser só inteiros
+        textField.keyboardType = .decimalPad
         return textField
     }()
 
@@ -96,7 +130,10 @@ class CreateMonthlyBudgetView: UIView {
             headerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 100),
-
+            
+            backButton.leadingAnchor.constraint(
+                equalTo: headerView.leadingAnchor, constant: 20),
+            
             monthYearTextField.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 20),
             monthYearTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             monthYearTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),

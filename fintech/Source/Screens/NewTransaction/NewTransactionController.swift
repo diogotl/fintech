@@ -64,8 +64,14 @@ class NewTransactionController: UIViewController {
 }
 
 extension NewTransactionController: NewTransactionDelegate {
-    func didTapSaveTransaction(transaction: Transaction) {
-        viewModel.add(transaction: transaction)
+    func didTapSaveTransaction(title: String, categoryId: UUID, value: Double, date: Date, type: String) {
+        viewModel.add(
+            title: title,
+            categoryId: categoryId,
+            value: value,
+            date: date,
+            type:type
+        )
         print(viewModel.store.transactions);
         self.dismiss(animated: true, completion: nil)
     }
