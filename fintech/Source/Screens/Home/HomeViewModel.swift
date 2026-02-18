@@ -2,6 +2,7 @@ import Foundation
 
 class HomeViewModel {
     private let store: TransactionsStore
+    private let calendar = Calendar.current
 
     init(store: TransactionsStore) {
         self.store = store
@@ -11,6 +12,25 @@ class HomeViewModel {
     }
 
     var onUpdate: (() -> Void)?
+
+    // MARK: - Month Management
+
+    var availableMonths: [Date] {
+        let currentYear = calendar.component(.year, from: Date())
+        var months: [Date] = []
+        for month in 1...12 {
+            if let date = calendar.date(
+                from: DateComponents(year: currentYear, month: month, day: 1))
+            {
+                months.append(date)
+            }
+        }
+        return months
+    }
+
+    var currentSelectedMonth: Date {
+        return store.selectedMonth
+    }
 
     var summary: MonthlySummary? {
         return store.getMonthlySummary()
@@ -54,5 +74,19 @@ class HomeViewModel {
 
     func changeMonth(to date: Date) {
         store.changeMonth(to: date)
+    }
+
+    func goToNextMonth() {
+        let nextMonth =
+            calendar.date(byAdding: .month, value: 1, to: currentSelectedMonth)
+            ?? currentSelectedMonth
+        changeMonth(to: nextMonth)
+    }
+
+    func goToPreviousMonth() {
+        let previousMonth =
+            calendar.date(byAdding: .month, value: -1, to: currentSelectedMonth)
+            ?? currentSelectedMonth
+        changeMonth(to: previousMonth)
     }
 }

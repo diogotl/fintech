@@ -23,7 +23,8 @@ class HomeView: UIView {
         userData.addSubview(userAppDescription)
         userData.addSubview(logOuttButton)
         addSubview(monthSelectorView)
-        addSubview(contentView)
+        addSubview(contentContainerView)
+        contentContainerView.addSubview(contentView)
         contentView.addSubview(summaryCardComponent)
         contentView.addSubview(transactionsTableViewHeader)
         transactionsTableViewHeader.addSubview(transactiionsTableViewHeaderLabel)
@@ -31,6 +32,7 @@ class HomeView: UIView {
         contentView.addSubview(transactionsTableView)
         transactionsTableView.addSubview(emptyStateLabel)
         addSubview(floatingButton)
+        setupGestureRecognizers()
         setupConstraints()
     }
 
@@ -39,6 +41,78 @@ class HomeView: UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+
+    private let contentContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.clipsToBounds = true
+        return view
+    }()
+
+    private func setupGestureRecognizers() {
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeLeft))
+        swipeLeft.direction = .left
+        contentContainerView.addGestureRecognizer(swipeLeft)
+
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeRight))
+        swipeRight.direction = .right
+        contentContainerView.addGestureRecognizer(swipeRight)
+    }
+
+    @objc
+    private func handleSwipeLeft() {
+        animateContentTransition(direction: .left) { [weak self] in
+            self?.delegate?.didSwipeToNextMonth()
+        }
+    }
+
+    @objc
+    private func handleSwipeRight() {
+        animateContentTransition(direction: .right) { [weak self] in
+            self?.delegate?.didSwipeToPreviousMonth()
+        }
+    }
+
+    func animateContentTransition(
+        direction: UISwipeGestureRecognizer.Direction, completion: @escaping () -> Void
+    ) {
+        let screenWidth = bounds.width
+        let translateX: CGFloat = direction == .left ? -screenWidth : screenWidth
+
+        // Criar snapshot do conteúdo atual
+        guard let snapshot = contentView.snapshotView(afterScreenUpdates: false) else {
+            completion()
+            return
+        }
+        snapshot.frame = contentView.frame
+        contentContainerView.addSubview(snapshot)
+
+        // Chamar completion para atualizar dados
+        completion()
+
+        // Posicionar novo conteúdo fora da tela (após atualização dos dados)
+        contentView.transform = CGAffineTransform(translationX: -translateX, y: 0)
+        contentView.layoutIfNeeded()
+
+        // Animar transição
+        UIView.animate(
+            withDuration: 0.35,
+            delay: 0,
+            usingSpringWithDamping: 0.85,
+            initialSpringVelocity: 0.5,
+            options: [.curveEaseOut],
+            animations: {
+                // Slide do conteúdo antigo para fora
+                snapshot.transform = CGAffineTransform(translationX: translateX, y: 0)
+                snapshot.alpha = 0.7
+
+                // Slide do novo conteúdo para dentro
+                self.contentView.transform = .identity
+            }
+        ) { _ in
+            snapshot.removeFromSuperview()
+        }
+    }
 
     private let userData: UIView = {
         let view = UIView()
@@ -86,7 +160,7 @@ class HomeView: UIView {
         button.addTarget(self, action: #selector(signOut), for: .touchUpInside)
         return button
     }()
-    
+
     @objc
     private func signOut() {
         delegate?.didTapSignOutButton()
@@ -147,7 +221,7 @@ class HomeView: UIView {
         label.textColor = .black
         return label
     }()
-    
+
     let emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = "No transactions yet."
@@ -210,16 +284,21 @@ class HomeView: UIView {
                 equalTo: userData.trailingAnchor, constant: -8),
             logOuttButton.heightAnchor.constraint(equalToConstant: 32),
             logOuttButton.widthAnchor.constraint(equalToConstant: 32),
-            
+
             monthSelectorView.topAnchor.constraint(equalTo: userData.bottomAnchor, constant: 8),
             monthSelectorView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             monthSelectorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             monthSelectorView.heightAnchor.constraint(equalToConstant: 44),
 
-            contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            contentView.topAnchor.constraint(equalTo: monthSelectorView.bottomAnchor),
-            contentView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            contentContainerView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentContainerView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentContainerView.topAnchor.constraint(equalTo: monthSelectorView.bottomAnchor),
+            contentContainerView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+
+            contentView.leadingAnchor.constraint(equalTo: contentContainerView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: contentContainerView.trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: contentContainerView.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: contentContainerView.bottomAnchor),
 
             summaryCardComponent.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
             summaryCardComponent.leadingAnchor.constraint(
@@ -258,7 +337,7 @@ class HomeView: UIView {
                 equalTo: contentView.trailingAnchor, constant: -16),
             transactionsTableView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor, constant: -16),
-            
+
             emptyStateLabel.centerXAnchor.constraint(equalTo: transactionsTableView.centerXAnchor),
             emptyStateLabel.centerYAnchor.constraint(equalTo: transactionsTableView.centerYAnchor),
 

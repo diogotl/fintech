@@ -6,6 +6,7 @@ class HomeViewController: UIViewController {
     var contentView: HomeView
     var viewModel: HomeViewModel
     var flowDelegate: HomeViewFlowDelegate?
+    private var isMonthSelectorConfigured = false
 
     init(
         contentView: HomeView,
@@ -16,23 +17,18 @@ class HomeViewController: UIViewController {
         self.viewModel = viewModel
         self.flowDelegate = flowDelegate
         super.init(nibName: nil, bundle: nil)
-        setup()
         contentView.transactionsTableView.dataSource = self
         contentView.transactionsTableView.delegate = self
-
-        viewModel.onUpdate = { [weak self] in
-            DispatchQueue.main.async {
-                self?.contentView.transactiionsTableViewHeaderCountLabel.text =
-                    "\(viewModel.transactionsCount)"
-
-                self?.contentView.emptyStateLabel.isHidden = viewModel.transactionsCount > 0
-                self?.contentView.transactionsTableView.reloadData()
-            }
-        }
+        setupBindings()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setup()
     }
 
     private func setup() {
@@ -47,6 +43,51 @@ class HomeViewController: UIViewController {
             contentView.topAnchor.constraint(equalTo: view.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Configurar carrossel apenas uma vez, depois que layout está pronto
+        if !isMonthSelectorConfigured {
+            configureMonthSelector()
+            isMonthSelectorConfigured = true
+        }
+    }
+
+    private func setupBindings() {
+        viewModel.onUpdate = { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.updateView()
+            }
+        }
+    }
+
+    private func configureMonthSelector() {
+        let months = viewModel.availableMonths
+        let currentMonth = viewModel.currentSelectedMonth
+        contentView.monthSelectorView.configure(with: months, selectedMonth: currentMonth)
+
+        // Atualizar view com o mês inicial
+        updateView()
+    }
+
+    private func updateView() {
+        let summary = viewModel.summary
+
+        contentView.transactiionsTableViewHeaderCountLabel.text = "\(viewModel.transactionsCount)"
+        contentView.emptyStateLabel.isHidden = viewModel.transactionsCount > 0
+
+        contentView.summaryCardComponent.configure(
+            budget: summary?.balance ?? 0,
+            usedExpenses: summary?.usedAmount ?? 0,
+            limit: summary?.limit ?? 0,
+            month: viewModel.currentSelectedMonth,
+            usedPercentage: summary?.usedPercentage ?? 0,
+            transactions: summary?.transactions ?? []
+        )
+
+        contentView.transactionsTableView.reloadData()
     }
 }
 
@@ -79,6 +120,18 @@ extension HomeViewController: HomeViewDelegate {
 
     func didTapPlusButton() {
         flowDelegate?.openNewTransactionBottomSheet()
+    }
+
+    func didSwipeToNextMonth() {
+        viewModel.goToNextMonth()
+        contentView.monthSelectorView.selectMonth(viewModel.currentSelectedMonth, animated: true)
+        updateView()
+    }
+
+    func didSwipeToPreviousMonth() {
+        viewModel.goToPreviousMonth()
+        contentView.monthSelectorView.selectMonth(viewModel.currentSelectedMonth, animated: true)
+        updateView()
     }
 }
 
@@ -115,28 +168,14 @@ extension HomeViewController: UITableViewDelegate {
 }
 
 extension HomeViewController: MonthSelectorViewDelegate {
-
-    func getMonthNumber(from date: Date) -> Int? {
-        return Calendar.current.dateComponents([.month], from: date).month
-    }
-
     func didSelectMonth(_ month: Date) {
         viewModel.changeMonth(to: month)
-
-        let summary = viewModel.summary
-
-        contentView.summaryCardComponent.configure(
-            budget: summary?.balance ?? 0,
-            usedExpenses: summary?.usedAmount ?? 0,
-            limit: summary?.limit ?? 0,
-            month: month,
-            usedPercentage: summary?.usedPercentage ?? 0,
-            transactions: summary?.transactions ?? []
-        )
+        updateView()
     }
 
     func isMonthSelected(_ month: Date) -> Bool {
-        //idk
-        return true
+        let calendar = Calendar.current
+        return calendar.isDate(
+            month, equalTo: viewModel.currentSelectedMonth, toGranularity: .month)
     }
 }
