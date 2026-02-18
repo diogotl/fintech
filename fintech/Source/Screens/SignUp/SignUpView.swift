@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 
 class SignUpView: UIView {
-    
+
     weak var delegate: SignUpViewDelegate?
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -91,8 +91,7 @@ class SignUpView: UIView {
         textField.layer.borderColor = Colors.gray300.cgColor
         textField.borderStyle = .roundedRect
         textField.isSecureTextEntry = true
-       
-        
+
         let eyeButton = UIButton(type: .custom)
         eyeButton.setImage(UIImage(systemName: "eye"), for: .normal)
         eyeButton.setImage(UIImage(systemName: "eye.slash"), for: .selected)
@@ -108,17 +107,14 @@ class SignUpView: UIView {
         passwordTextField.isSecureTextEntry.toggle()
     }
 
-    private let signUpButton: UIButton = {
-        let button = UIButton(type: .system)
+    private lazy var signUpButton: Button = {
+        let button = Button()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Sign Up", for: .normal)
-        button.backgroundColor = Colors.magenta
-        button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(signUpButtonTapped), for:.touchUpInside)
-        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
+        button.configure(title: "Create Account")
         return button
     }()
-    
+
     @objc
     private func signUpButtonTapped() {
         delegate?.didTapSignUpButton(
@@ -140,13 +136,14 @@ class SignUpView: UIView {
             welcomeText.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             welcomeText.centerXAnchor.constraint(equalTo: centerXAnchor),
             welcomeText.heightAnchor.constraint(equalToConstant: 30),
-            
+
             welcomeDescription.topAnchor.constraint(equalTo: welcomeText.bottomAnchor, constant: 8),
             welcomeDescription.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             welcomeDescription.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             welcomeDescription.centerXAnchor.constraint(equalTo: centerXAnchor),
 
-            nameTextField.topAnchor.constraint(equalTo: welcomeDescription.bottomAnchor, constant: 16),
+            nameTextField.topAnchor.constraint(
+                equalTo: welcomeDescription.bottomAnchor, constant: 16),
             nameTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             nameTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             nameTextField.heightAnchor.constraint(equalToConstant: 48),
@@ -156,12 +153,14 @@ class SignUpView: UIView {
             emailTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             emailTextField.heightAnchor.constraint(equalToConstant: 48),
 
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 8),
+            passwordTextField.topAnchor.constraint(
+                equalTo: emailTextField.bottomAnchor, constant: 8),
             passwordTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             passwordTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             passwordTextField.heightAnchor.constraint(equalToConstant: 48),
 
-            signUpButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            signUpButton.bottomAnchor.constraint(
+                equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
             signUpButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             signUpButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             signUpButton.heightAnchor.constraint(equalToConstant: 48),
