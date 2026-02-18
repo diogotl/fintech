@@ -38,7 +38,7 @@ class CreateMonthlyBudgetController: UIViewController {
 
     private func setup() {
         view.addSubview(contentView)
-        contentView.backgroundColor = Colors.gray100
+        contentView.backgroundColor = Colors.gray200
         contentView.viewDelegate = self
         contentView.budgetsTableView.delegate = self
         contentView.budgetsTableView.dataSource = self
