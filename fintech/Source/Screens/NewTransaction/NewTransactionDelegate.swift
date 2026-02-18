@@ -13,6 +13,8 @@ protocol NewTransactionDelegate: AnyObject {
         categoryId: UUID,
         value: Double,
         date: Date,
-        type: String
+        type: ToogleTypeButtonType
     )
+    
+    func didTapDismissButton()
 }

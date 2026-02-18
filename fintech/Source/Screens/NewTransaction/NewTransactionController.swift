@@ -64,13 +64,17 @@ class NewTransactionController: UIViewController {
 }
 
 extension NewTransactionController: NewTransactionDelegate {
-    func didTapSaveTransaction(title: String, categoryId: UUID, value: Double, date: Date, type: String) {
+    func didTapDismissButton() {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func didTapSaveTransaction(title: String, categoryId: UUID, value: Double, date: Date, type: ToogleTypeButtonType) {
         viewModel.add(
             title: title,
             categoryId: categoryId,
             value: value,
             date: date,
-            type:type
+            type: type == .income ? "income" : "outcome"
         )
         print(viewModel.store.transactions);
         self.dismiss(animated: true, completion: nil)
