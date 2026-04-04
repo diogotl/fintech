@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D9235EAC2F4FAB1B009FCEAB /* Auth in Frameworks */ = {isa = PBXBuildFile; productRef = D9235EAB2F4FAB1B009FCEAB /* Auth */; };
+		D9235EAE2F4FAB1B009FCEAB /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D9235EAD2F4FAB1B009FCEAB /* Supabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		D9BDE6EB2E2B753600D5694E /* fintech.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fintech.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9235EAE2F4FAB1B009FCEAB /* Supabase in Frameworks */,
+				D9235EAC2F4FAB1B009FCEAB /* Auth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = fintech;
 			packageProductDependencies = (
+				D9235EAB2F4FAB1B009FCEAB /* Auth */,
+				D9235EAD2F4FAB1B009FCEAB /* Supabase */,
 			);
 			productName = fintech;
 			productReference = D9BDE6EB2E2B753600D5694E /* fintech.app */;
@@ -107,6 +116,9 @@
 			);
 			mainGroup = D9BDE6E22E2B753600D5694E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D9235EAA2F4FAB1B009FCEAB /* XCRemoteSwiftPackageReference "supabase-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D9BDE6EC2E2B753600D5694E /* Products */;
 			projectDirPath = "";
@@ -333,6 +345,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D9235EAA2F4FAB1B009FCEAB /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D9235EAB2F4FAB1B009FCEAB /* Auth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D9235EAA2F4FAB1B009FCEAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Auth;
+		};
+		D9235EAD2F4FAB1B009FCEAB /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D9235EAA2F4FAB1B009FCEAB /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D9BDE6E32E2B753600D5694E /* Project object */;
 }
